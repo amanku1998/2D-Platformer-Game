@@ -325,6 +325,12 @@ BoxCollider2D:
     type: 3}
   m_PrefabInstance: {fileID: 5246398153645888828}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1848577757 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6082589624098856086, guid: 5af03841802d06f4791420f7f33f2e1f,
+    type: 3}
+  m_PrefabInstance: {fileID: 5246398153645888828}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5246398153645888828
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -332,6 +338,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1977566854170456449, guid: 5af03841802d06f4791420f7f33f2e1f,
+        type: 3}
+      propertyPath: speed
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1977566854170456449, guid: 5af03841802d06f4791420f7f33f2e1f,
         type: 3}
       propertyPath: boxCollider
@@ -347,6 +358,11 @@ PrefabInstance:
       propertyPath: crouchSize.y
       value: 1.25
       objectReference: {fileID: 0}
+    - target: {fileID: 1977566854170456449, guid: 5af03841802d06f4791420f7f33f2e1f,
+        type: 3}
+      propertyPath: playerAnimator
+      value: 
+      objectReference: {fileID: 1848577757}
     - target: {fileID: 6941794166418905910, guid: 5af03841802d06f4791420f7f33f2e1f,
         type: 3}
       propertyPath: m_Size.x
