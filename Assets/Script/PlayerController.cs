@@ -7,19 +7,30 @@ public class PlayerController : MonoBehaviour
     public Animator playerAnimator;
 
     public float speed;
+    public float jumpPower;
 
+    private Rigidbody2D rb2d;
     public BoxCollider2D boxCollider;
+    public LayerMask groundLayer; // LayerMask to specify ground layer
+
     public Vector2 crouchSize = new Vector2(1.0f, 1.25f);  // Desired size when crouching (only height reduced)
     private Vector2 crouchOffset;                          // New offset to keep the bottom in place
     private Vector2 originalSize;
     private Vector2 originalOffset;
+
+    private bool isGrounded;
+
+    private void Awake()
+    {
+        rb2d = gameObject.GetComponent<Rigidbody2D>();
+    }
 
     private void Start()
     {
         // Store the original size and offset of the collider
         originalSize = boxCollider.size;
         originalOffset = boxCollider.offset;
-        Debug.Log("originalOffset.y :" + originalOffset.y + "originalSize.y :" + originalSize.y + "crouchSize.y :" + crouchSize.y);
+        //Debug.Log("originalOffset.y :" + originalOffset.y + "originalSize.y :" + originalSize.y + "crouchSize.y :" + crouchSize.y);
         // Calculate the crouch offset so the bottom of the collider stays in place
         crouchOffset = new Vector2(originalOffset.x, originalOffset.y - (originalSize.y - crouchSize.y) / 2);
     }
@@ -27,11 +38,10 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         float horizontalInput = Input.GetAxisRaw("Horizontal");
-        MoveCharacter(horizontalInput);
-        PlayMovementAnimation(horizontalInput);
+        float verticalInput = Input.GetAxisRaw("Jump");
 
-        float verticalInput = Input.GetAxis("Vertical");
-        PlayJumpAnimation(verticalInput);
+        MoveCharacter(horizontalInput, verticalInput);
+        PlayMovementAnimation(horizontalInput, verticalInput);
 
         //Check for crouch
         if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
@@ -44,17 +54,38 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void MoveCharacter(float horizontal)
+    // Method to check if the player is on the ground
+    private void CheckGrounded()
     {
+        // Check if the boxCollider is colliding with the ground layer using Physics2D.OverlapBox
+        isGrounded = Physics2D.OverlapBox(boxCollider.bounds.center, boxCollider.bounds.size, 0f, groundLayer);
+    }
+
+    private void MoveCharacter(float horizontal , float vertical)
+    {
+        //Move player horizontally
         Vector3 position = transform.position;
         position.x += horizontal * speed * Time.deltaTime;
         transform.position = position;
+
+        CheckGrounded();
+
+        Debug.Log("vertical :"+ vertical  + "CheckGrounded :"+ isGrounded);
+        //Move player Vertically
+        if (vertical > 0 && isGrounded)
+        {
+            rb2d.AddForce(new Vector2(0f, jumpPower), ForceMode2D.Force);
+            isGrounded = false; // Set isGrounded to false until the player touches the ground again
+        }
     }
 
-    private void PlayMovementAnimation(float horizontal)
+    private void PlayMovementAnimation(float horizontal, float vertical)
     {
-        //Set the value of Speed in animator variable
-        playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));
+        if (isGrounded)
+        {
+            //Set the value of Speed in animator variable
+            playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));
+        }
 
         Vector3 scale = transform.localScale;
         if (horizontal < 0)
@@ -68,6 +99,16 @@ public class PlayerController : MonoBehaviour
             scale.x = Mathf.Abs(scale.x);
         }
         transform.localScale = scale;
+
+        // Change the bool value of jump animation when vertical input is greater than zero
+        if (vertical > 0 /*&& isGrounded*/)
+        {
+            playerAnimator.SetBool("Jump", true);
+        }
+        else
+        {
+            playerAnimator.SetBool("Jump", false);
+        }
     }
 
     public void Crouch(bool crouch)
@@ -88,18 +129,17 @@ public class PlayerController : MonoBehaviour
         playerAnimator.SetBool("Crouch", crouch);
     }
 
-    public void PlayJumpAnimation(float vertical)
+    private void OnDrawGizmos()
     {
-        // Change the bool value of jump animation when vertical input is greater than zero
-        if (vertical > 0)
+        // Set Gizmo color to visualize the overlap box
+        Gizmos.color = Color.red;
+
+        // Draw the overlap box at the collider's center with the same size as the boxCollider
+        if (boxCollider != null)
         {
-            playerAnimator.SetBool("Jump", true);
+            // You can adjust the color or transparency for better visibility
+            Gizmos.DrawWireCube(boxCollider.bounds.center, boxCollider.bounds.size);
         }
     }
 
-    //Create method to reset the jum variable which is called after the jump animation is completed
-    public void TriggerJumpEvent()
-    {
-        playerAnimator.SetBool("Jump", false);
-    }
 }
