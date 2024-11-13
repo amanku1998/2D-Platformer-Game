@@ -219,9 +219,9 @@ GameObject:
   - component: {fileID: 673433897}
   - component: {fileID: 673433896}
   - component: {fileID: 673433895}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Platform
-  m_TagString: Untagged
+  m_TagString: platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -326,16 +326,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1977566854170456449, guid: 5af03841802d06f4791420f7f33f2e1f,
-        type: 3}
-      propertyPath: jumpPower
-      value: 130
-      objectReference: {fileID: 0}
-    - target: {fileID: 1977566854170456449, guid: 5af03841802d06f4791420f7f33f2e1f,
-        type: 3}
-      propertyPath: groundLayer.m_Bits
-      value: 64
-      objectReference: {fileID: 0}
     - target: {fileID: 7632531104423823934, guid: 5af03841802d06f4791420f7f33f2e1f,
         type: 3}
       propertyPath: m_Name
@@ -395,11 +385,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8669770142312267820, guid: 5af03841802d06f4791420f7f33f2e1f,
-        type: 3}
-      propertyPath: m_Mass
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5af03841802d06f4791420f7f33f2e1f, type: 3}

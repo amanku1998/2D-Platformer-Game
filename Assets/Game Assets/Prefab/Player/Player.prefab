@@ -169,10 +169,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerAnimator: {fileID: 6082589624098856086}
-  speed: 6
-  jumpPower: 32
+  moveSpeed: 4
+  jumpPower: 4
+  rigidbodyPlayer: {fileID: 8669770142312267820}
   boxCollider: {fileID: 6941794166418905910}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
   crouchSize: {x: 0.6, y: 1.25}
+  isGrounded: 0

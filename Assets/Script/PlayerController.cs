@@ -4,25 +4,23 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public Animator playerAnimator;
+    [SerializeField] private Animator playerAnimator;
 
-    public float speed;
-    public float jumpPower;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float jumpPower;
 
-    private Rigidbody2D rb2d;
-    public BoxCollider2D boxCollider;
-    public LayerMask groundLayer; // LayerMask to specify ground layer
+    [SerializeField] private Rigidbody2D rigidbodyPlayer;
+    [SerializeField] private BoxCollider2D boxCollider;
 
     public Vector2 crouchSize = new Vector2(1.0f, 1.25f);  // Desired size when crouching (only height reduced)
     private Vector2 crouchOffset;                          // New offset to keep the bottom in place
     private Vector2 originalSize;
     private Vector2 originalOffset;
-
-    private bool isGrounded;
+    [SerializeField] private bool isGrounded;
 
     private void Awake()
     {
-        rb2d = gameObject.GetComponent<Rigidbody2D>();
+        rigidbodyPlayer = gameObject.GetComponent<Rigidbody2D>();
     }
 
     private void Start()
@@ -37,11 +35,13 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        float verticalInput = Input.GetAxisRaw("Jump");
+        float horizontal = Input.GetAxisRaw("Horizontal");
 
-        MoveCharacter(horizontalInput, verticalInput);
-        PlayMovementAnimation(horizontalInput, verticalInput);
+        HorizontalAnimation(horizontal);
+        MoveCharacter(horizontal);
+
+        float vertical = Input.GetAxisRaw("Vertical");
+        MovePlayerVertically(vertical);
 
         //Check for crouch
         if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
@@ -51,63 +51,6 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl))
         {
             Crouch(false);
-        }
-    }
-
-    // Method to check if the player is on the ground
-    private void CheckGrounded()
-    {
-        // Check if the boxCollider is colliding with the ground layer using Physics2D.OverlapBox
-        isGrounded = Physics2D.OverlapBox(boxCollider.bounds.center, boxCollider.bounds.size, 0f, groundLayer);
-    }
-
-    private void MoveCharacter(float horizontal , float vertical)
-    {
-        //Move player horizontally
-        Vector3 position = transform.position;
-        position.x += horizontal * speed * Time.deltaTime;
-        transform.position = position;
-
-        CheckGrounded();
-
-        Debug.Log("vertical :"+ vertical  + "CheckGrounded :"+ isGrounded);
-        //Move player Vertically
-        if (vertical > 0 && isGrounded)
-        {
-            rb2d.AddForce(new Vector2(0f, jumpPower), ForceMode2D.Force);
-            isGrounded = false; // Set isGrounded to false until the player touches the ground again
-        }
-    }
-
-    private void PlayMovementAnimation(float horizontal, float vertical)
-    {
-        if (isGrounded)
-        {
-            //Set the value of Speed in animator variable
-            playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));
-        }
-
-        Vector3 scale = transform.localScale;
-        if (horizontal < 0)
-        {
-            //Flip the player into left side
-            scale.x = -1f * Mathf.Abs(scale.x);
-        }
-        else if (horizontal > 0)
-        {
-            //Flip the player into right side
-            scale.x = Mathf.Abs(scale.x);
-        }
-        transform.localScale = scale;
-
-        // Change the bool value of jump animation when vertical input is greater than zero
-        if (vertical > 0 /*&& isGrounded*/)
-        {
-            playerAnimator.SetBool("Jump", true);
-        }
-        else
-        {
-            playerAnimator.SetBool("Jump", false);
         }
     }
 
@@ -129,17 +72,64 @@ public class PlayerController : MonoBehaviour
         playerAnimator.SetBool("Crouch", crouch);
     }
 
-    private void OnDrawGizmos()
+    private void MoveCharacter(float horizontal)
     {
-        // Set Gizmo color to visualize the overlap box
-        Gizmos.color = Color.red;
+        // Horizontal character movement
+        Vector3 newPosition = transform.position;
+        newPosition.x += horizontal * moveSpeed * Time.deltaTime;
+        transform.position = newPosition;
+    }
 
-        // Draw the overlap box at the collider's center with the same size as the boxCollider
-        if (boxCollider != null)
+    private void HorizontalAnimation(float horizontal)
+    {
+        if (isGrounded)
         {
-            // You can adjust the color or transparency for better visibility
-            Gizmos.DrawWireCube(boxCollider.bounds.center, boxCollider.bounds.size);
+            //Horizontal animation
+            playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));
+        }
+
+        //Flipping the player
+        Vector2 scale = transform.localScale;
+        if (horizontal < 0)
+        {
+            scale.x = -1f * Mathf.Abs(scale.x);
+        }
+        else if (horizontal > 0)
+        {
+            scale.x = Mathf.Abs(scale.x);
+        }
+        transform.localScale = scale;
+    }
+
+
+    public void MovePlayerVertically(float vertical)
+    {
+        if (vertical > 0 && isGrounded)
+        {
+            playerAnimator.SetTrigger("Jump");
+            rigidbodyPlayer.AddForce(new Vector2(0, jumpPower), ForceMode2D.Impulse);
         }
     }
+
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (other.transform.tag == "platform")
+        {
+            isGrounded = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.transform.tag == "platform")
+        {
+            isGrounded = false;
+        }
+    }
+
+    //private void OnDrawGizmos()
+    //{
+
+    //}
 
 }
