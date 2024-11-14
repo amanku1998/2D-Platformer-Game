@@ -4,13 +4,22 @@ using UnityEngine;
 
 public class KeyController : MonoBehaviour
 {
+    [SerializeField] private Animator keyAnimator;
+    private bool isCollected = false;   // Flag to ensure item is collected only once
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.GetComponent<PlayerController>() != null)
+        if (!isCollected && collision.gameObject.GetComponent<PlayerController>() != null)
         {
             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
             playerController.PickUpKey();
-            Destroy(gameObject);
+
+            keyAnimator.SetTrigger("isPlayerTrigger");      
         }
+    }
+
+    public void TriggerFadeOut()
+    {
+        Destroy(gameObject);
     }
 }
