@@ -82,11 +82,14 @@ public class PlayerController : MonoBehaviour
 
     private void HorizontalAnimation(float horizontal)
     {
+        playerAnimator.SetBool("isGrounded", isGrounded);
+
         if (isGrounded)
         {
             //Horizontal animation
-            playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));
+            playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));           
         }
+
 
         //Flipping the player
         Vector2 scale = transform.localScale;
