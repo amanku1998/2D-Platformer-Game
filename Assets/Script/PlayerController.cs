@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public ScoreController scoreController;
     [SerializeField] private Animator playerAnimator;
 
     [SerializeField] private float moveSpeed;
@@ -13,6 +15,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private BoxCollider2D boxCollider;
 
     public Vector2 crouchSize = new Vector2(1.0f, 1.25f);  // Desired size when crouching (only height reduced)
+
+    internal void PickUpKey()
+    {
+        scoreController.IncreaseScore(10);
+    }
+
     private Vector2 crouchOffset;                          // New offset to keep the bottom in place
     private Vector2 originalSize;
     private Vector2 originalOffset;
