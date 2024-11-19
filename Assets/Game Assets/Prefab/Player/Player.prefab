@@ -171,7 +171,7 @@ MonoBehaviour:
   scoreController: {fileID: 0}
   playerAnimator: {fileID: 6082589624098856086}
   moveSpeed: 4
-  jumpPower: 15
+  jumpPower: 8
   rigidbodyPlayer: {fileID: 8669770142312267820}
   boxCollider: {fileID: 6941794166418905910}
   crouchSize: {x: 0.6, y: 1.25}

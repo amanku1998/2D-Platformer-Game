@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,9 +15,21 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody2D rigidbodyPlayer;
     [SerializeField] private BoxCollider2D boxCollider;
 
+    public void KillPlayer()
+    {
+        Debug.Log("Player killed by enemy");
+        //Destroy(gameObject);
+        playerAnimator.SetTrigger("isPlayerDead");
+    }
+
+    public void ReloadLevel()
+    {
+        SceneManager.LoadScene(0);
+    }
+
     public Vector2 crouchSize = new Vector2(1.0f, 1.25f);  // Desired size when crouching (only height reduced)
 
-    internal void PickUpKey()
+    public void PickUpKey()
     {
         scoreController.IncreaseScore(10);
     }
@@ -36,7 +49,6 @@ public class PlayerController : MonoBehaviour
         // Store the original size and offset of the collider
         originalSize = boxCollider.size;
         originalOffset = boxCollider.offset;
-        //Debug.Log("originalOffset.y :" + originalOffset.y + "originalSize.y :" + originalSize.y + "crouchSize.y :" + crouchSize.y);
         // Calculate the crouch offset so the bottom of the collider stays in place
         crouchOffset = new Vector2(originalOffset.x, originalOffset.y - (originalSize.y - crouchSize.y) / 2);
     }
@@ -91,13 +103,11 @@ public class PlayerController : MonoBehaviour
     private void HorizontalAnimation(float horizontal)
     {
         playerAnimator.SetBool("isGrounded", isGrounded);
-
         if (isGrounded)
         {
             //Horizontal animation
             playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));           
         }
-
 
         //Flipping the player
         Vector2 scale = transform.localScale;
@@ -118,7 +128,7 @@ public class PlayerController : MonoBehaviour
         if (vertical > 0 && isGrounded)
         {
             playerAnimator.SetTrigger("Jump");
-            rigidbodyPlayer.AddForce(new Vector2(0, jumpPower), ForceMode2D.Impulse);
+            rigidbodyPlayer.velocity = new Vector2(rigidbodyPlayer.velocity.x, jumpPower);
         }
     }
 
@@ -137,10 +147,5 @@ public class PlayerController : MonoBehaviour
             isGrounded = false;
         }
     }
-
-    //private void OnDrawGizmos()
-    //{
-
-    //}
 
 }
