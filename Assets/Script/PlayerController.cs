@@ -15,11 +15,44 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody2D rigidbodyPlayer;
     [SerializeField] private BoxCollider2D boxCollider;
 
-    public void KillPlayer()
+    //public void KillPlayer()
+    //{
+    //    HealthManager.health--;
+
+    //    if (HealthManager.health <= 0)
+    //    {
+    //        Debug.Log("Player killed by enemy");
+    //        //Destroy(gameObject);
+    //        playerAnimator.SetTrigger("isPlayerDead");
+    //    }
+    //    else
+    //    {
+    //        playerAnimator.SetTrigger("isPlayerHurt");
+    //    }
+    //}
+
+    public void GetHurt()
     {
-        Debug.Log("Player killed by enemy");
-        //Destroy(gameObject);
-        playerAnimator.SetTrigger("isPlayerDead");
+        HealthManager.health--;
+
+        if (HealthManager.health <= 0)
+        {
+            Debug.Log("Player killed by enemy");
+            //Destroy(gameObject);
+            playerAnimator.SetTrigger("isPlayerDead");
+        }
+        else
+        {
+            StartCoroutine(decreaseHealth());
+        }
+    }
+
+    IEnumerator decreaseHealth()
+    {
+        Physics2D.IgnoreLayerCollision(7,8);
+        playerAnimator.SetTrigger("isPlayerHurt");
+        yield return new WaitForSeconds(2);
+        Physics2D.IgnoreLayerCollision(7, 8, false);
     }
 
     public void ReloadLevel()
@@ -106,7 +139,12 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
         {
             //Horizontal animation
-            playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));           
+            playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));
+        }
+        else
+        {
+            //Horizontal animation
+            playerAnimator.SetFloat("Speed", 0);
         }
 
         //Flipping the player
