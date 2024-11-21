@@ -155,17 +155,29 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: KeyIcon_Empty
+      name: KeyIcon_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 128
-        width: 128
-        height: 128
+        x: 39
+        y: 162
+        width: 45
+        height: 74
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -173,20 +185,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 02305410000000000800000000000000
-      internalID: 21300000
+      spriteID: ab5fe2cb46b8fb94993adfc472d30010
+      internalID: -223182468
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: KeyIcon_00
+      name: KeyIcon_1
       rect:
         serializedVersion: 2
-        x: 128
-        y: 128
-        width: 128
-        height: 128
+        x: 173
+        y: 170
+        width: 35
+        height: 59
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -194,20 +206,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 22305410000000000800000000000000
-      internalID: 21300002
+      spriteID: 342ff1061bbb0d5469e4a817da458d04
+      internalID: -1532870779
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: KeyIcon_01
+      name: KeyIcon_2
       rect:
         serializedVersion: 2
-        x: 256
-        y: 128
-        width: 128
-        height: 128
+        x: 272
+        y: 160
+        width: 101
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -215,20 +227,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 42305410000000000800000000000000
-      internalID: 21300004
+      spriteID: c3e382ed6ea9c2a48afcd7d623d21370
+      internalID: 1870266352
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: KeyIcon_02
+      name: KeyIcon_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 128
-        height: 128
+        x: 45
+        y: 2
+        width: 27
+        height: 116
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -236,20 +248,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 62305410000000000800000000000000
-      internalID: 21300006
+      spriteID: 2231344ed64bbe74bb0736f39bbf7cf8
+      internalID: -1641879255
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: KeyIcon_03
+      name: KeyIcon_4
       rect:
         serializedVersion: 2
-        x: 128
-        y: 0
-        width: 128
-        height: 128
+        x: 155
+        y: 48
+        width: 73
+        height: 43
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -257,20 +269,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 82305410000000000800000000000000
-      internalID: 21300008
+      spriteID: 3d3e00a7e0507c3489ee38c21ceb6584
+      internalID: 1200161688
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: KeyIcon_Collected
+      name: KeyIcon_5
       rect:
         serializedVersion: 2
-        x: 256
-        y: 0
-        width: 128
-        height: 128
+        x: 298
+        y: 33
+        width: 44
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -278,8 +290,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a2305410000000000800000000000000
-      internalID: 21300010
+      spriteID: 2f2ec7f6abc1c7c4ca1a34db2e51a7d1
+      internalID: -969046002
       vertices: []
       indices: 
       edges: []
@@ -287,7 +299,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 120fb56645198074e8bedd23b864a5fa
     internalID: 0
     vertices: []
     indices: 
@@ -295,12 +307,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      KeyIcon_00: 21300002
-      KeyIcon_01: 21300004
-      KeyIcon_02: 21300006
-      KeyIcon_03: 21300008
-      KeyIcon_Collected: 21300010
-      KeyIcon_Empty: 21300000
+      KeyIcon_0: -223182468
+      KeyIcon_1: -1532870779
+      KeyIcon_2: 1870266352
+      KeyIcon_3: -1641879255
+      KeyIcon_4: 1200161688
+      KeyIcon_5: -969046002
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

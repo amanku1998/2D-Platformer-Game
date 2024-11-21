@@ -9,8 +9,8 @@ public class HealthManager : MonoBehaviour
 
     public Image[] hearts;
 
-    public Sprite fullHeart;
-    public Sprite emptyHeart;
+    //public Sprite fullHeart;
+    //public Sprite emptyHeart;
 
     private void Awake()
     {

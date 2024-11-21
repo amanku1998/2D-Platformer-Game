@@ -18,7 +18,7 @@ public class CameraController : MonoBehaviour
         transform.position = new Vector3(player.position.x + 4f * direction, player.position.y + yOffset, offset.z);
 
         // Set the minimum Y position based on the starting Y position
-        minCameraY = -2;
+        minCameraY = -3.5f;
     }
 
     void Update()

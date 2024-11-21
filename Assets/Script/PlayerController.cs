@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
 
         if (HealthManager.health <= 0)
         {
+            StartCoroutine(hidePlayerCollisionWithEnemy());
             Debug.Log("Player killed by enemy");
             //Destroy(gameObject);
             playerAnimator.SetTrigger("isPlayerDead");
@@ -55,8 +56,16 @@ public class PlayerController : MonoBehaviour
         Physics2D.IgnoreLayerCollision(7, 8, false);
     }
 
+    IEnumerator hidePlayerCollisionWithEnemy()
+    {
+        Physics2D.IgnoreLayerCollision(7, 8);
+        yield return new WaitForSeconds(2f);
+        Physics2D.IgnoreLayerCollision(7, 8, false);
+    }
+
     public void ReloadLevel()
     {
+        Physics2D.IgnoreLayerCollision(7, 8, false);
         SceneManager.LoadScene(0);
     }
 
@@ -64,7 +73,7 @@ public class PlayerController : MonoBehaviour
 
     public void PickUpKey()
     {
-        scoreController.IncreaseScore(10);
+        scoreController.IncreaseScore(1);
     }
 
     private Vector2 crouchOffset;                          // New offset to keep the bottom in place

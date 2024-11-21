@@ -80,5 +80,13 @@ public class EnemyController : MonoBehaviour
             //playerController.KillPlayer();
             playerController.GetHurt();
         }
+        else if (collision.gameObject.CompareTag("enemy"))
+        {
+            // Flip direction when colliding with another enemy
+            if (!isIdle)
+            {
+                StartCoroutine(HandleDirectionChange());
+            }
+        }
     }
 }
