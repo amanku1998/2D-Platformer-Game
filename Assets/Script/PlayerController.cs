@@ -4,64 +4,132 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public Animator animator;
+    [SerializeField] private Animator playerAnimator;
 
-    public BoxCollider2D boxCollider;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float jumpPower;
+
+    [SerializeField] private Rigidbody2D rigidbodyPlayer;
+    [SerializeField] private BoxCollider2D boxCollider;
+
     public Vector2 crouchSize = new Vector2(1.0f, 1.25f);  // Desired size when crouching (only height reduced)
     private Vector2 crouchOffset;                          // New offset to keep the bottom in place
     private Vector2 originalSize;
     private Vector2 originalOffset;
+    [SerializeField] private bool isGrounded;
+
+    private void Awake()
+    {
+        rigidbodyPlayer = gameObject.GetComponent<Rigidbody2D>();
+    }
 
     private void Start()
     {
         // Store the original size and offset of the collider
         originalSize = boxCollider.size;
         originalOffset = boxCollider.offset;
-        Debug.Log("originalOffset.y :"+ originalOffset.y + "originalSize.y :"+ originalSize.y + "crouchSize.y :"+ crouchSize.y);
+        //Debug.Log("originalOffset.y :" + originalOffset.y + "originalSize.y :" + originalSize.y + "crouchSize.y :" + crouchSize.y);
         // Calculate the crouch offset so the bottom of the collider stays in place
         crouchOffset = new Vector2(originalOffset.x, originalOffset.y - (originalSize.y - crouchSize.y) / 2);
     }
 
     private void Update()
     {
-        float speed = Input.GetAxisRaw("Horizontal");
-        float verticalSpeed = Input.GetAxisRaw("Vertical");
-        //Set the value of Speed in animator variable
-        animator.SetFloat("Speed", Mathf.Abs(speed));
+        float horizontal = Input.GetAxisRaw("Horizontal");
 
-        Vector3 scale = transform.localScale;
-        if (speed < 0){
-            //Flip the player into left side
-            scale.x = -1f * Mathf.Abs(scale.x);
-        }
-        else if (speed > 0){
-            //Flip the player into right side
-            scale.x = Mathf.Abs(scale.x);
-        }
-        transform.localScale = scale;
+        HorizontalAnimation(horizontal);
+        MoveCharacter(horizontal);
+
+        float vertical = Input.GetAxisRaw("Vertical");
+        MovePlayerVertically(vertical);
 
         //Check for crouch
-        if(Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl)){
-            animator.SetBool("Crouch", true);
+        if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
+        {
+            Crouch(true);
+        }
+        else if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl))
+        {
+            Crouch(false);
+        }
+    }
+
+    public void Crouch(bool crouch)
+    {
+        if (crouch == true)
+        {
             // Change collider size and offset for crouching
             boxCollider.size = crouchSize;
             boxCollider.offset = crouchOffset;
         }
-        else if(Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl)){
-            animator.SetBool("Crouch", false);
+        else
+        {
             //Reset the box collider size back to default size
             boxCollider.size = originalSize;
             boxCollider.offset = originalOffset;
         }
 
-        // Change the bool value of jump animation when vertical input is greater than zero
-        if (verticalSpeed > 0){
-            animator.SetBool("Jump", true);
+        playerAnimator.SetBool("Crouch", crouch);
+    }
+
+    private void MoveCharacter(float horizontal)
+    {
+        // Horizontal character movement
+        Vector3 newPosition = transform.position;
+        newPosition.x += horizontal * moveSpeed * Time.deltaTime;
+        transform.position = newPosition;
+    }
+
+    private void HorizontalAnimation(float horizontal)
+    {
+        if (isGrounded)
+        {
+            //Horizontal animation
+            playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));
+        }
+
+        //Flipping the player
+        Vector2 scale = transform.localScale;
+        if (horizontal < 0)
+        {
+            scale.x = -1f * Mathf.Abs(scale.x);
+        }
+        else if (horizontal > 0)
+        {
+            scale.x = Mathf.Abs(scale.x);
+        }
+        transform.localScale = scale;
+    }
+
+
+    public void MovePlayerVertically(float vertical)
+    {
+        if (vertical > 0 && isGrounded)
+        {
+            playerAnimator.SetTrigger("Jump");
+            rigidbodyPlayer.AddForce(new Vector2(0, jumpPower), ForceMode2D.Impulse);
         }
     }
 
-    //Create method to reset the jum variable which is called after the jump animation is completed
-    public void TriggerJumpEvent(){
-        animator.SetBool("Jump", false);
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (other.transform.tag == "platform")
+        {
+            isGrounded = true;
+        }
     }
+
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.transform.tag == "platform")
+        {
+            isGrounded = false;
+        }
+    }
+
+    //private void OnDrawGizmos()
+    //{
+
+    //}
+
 }
