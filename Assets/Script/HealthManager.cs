@@ -6,11 +6,7 @@ using UnityEngine.UI;
 public class HealthManager : MonoBehaviour
 {
     public static int health = 3;
-
     public Image[] hearts;
-
-    //public Sprite fullHeart;
-    //public Sprite emptyHeart;
 
     private void Awake()
     {
@@ -19,15 +15,9 @@ public class HealthManager : MonoBehaviour
 
     private void Update()
     {
-        foreach(Image img in hearts)
+        for (int i = 0; i < hearts.Length; i++)
         {
-            img.color = Color.black;
-        }
-
-        for (int i = 0; i < health; i++)
-        {
-            //hearts[i].sprite = fullHeart;
-            hearts[i].color = Color.white;
+            hearts[i].color = (i < health) ? Color.red : Color.black;
         }
     }
 

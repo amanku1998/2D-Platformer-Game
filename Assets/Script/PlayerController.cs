@@ -15,6 +15,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody2D rigidbodyPlayer;
     [SerializeField] private BoxCollider2D boxCollider;
 
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private float groundCheckRadius = 0.2f;
+    [SerializeField] private LayerMask groundLayer;
+
     //public void KillPlayer()
     //{
     //    HealthManager.health--;
@@ -97,6 +101,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        // Check if the player is grounded
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+
         float horizontal = Input.GetAxisRaw("Horizontal");
 
         HorizontalAnimation(horizontal);
@@ -113,6 +120,16 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl))
         {
             Crouch(false);
+        }
+
+        // Check for fall animation condition
+        if (!isGrounded && rigidbodyPlayer.velocity.y < 0)
+        {
+            playerAnimator.SetBool("isFalling", true);
+        }
+        else if (isGrounded)
+        {
+            playerAnimator.SetBool("isFalling", false);
         }
     }
 
@@ -179,20 +196,20 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnCollisionStay2D(Collision2D other)
-    {
-        if (other.transform.tag == "platform")
-        {
-            isGrounded = true;
-        }
-    }
+    //private void OnCollisionStay2D(Collision2D other)
+    //{
+    //    if (other.transform.tag == "platform")
+    //    {
+    //        isGrounded = true;
+    //    }
+    //}
 
-    private void OnCollisionExit2D(Collision2D other)
-    {
-        if (other.transform.tag == "platform")
-        {
-            isGrounded = false;
-        }
-    }
+    //private void OnCollisionExit2D(Collision2D other)
+    //{
+    //    if (other.transform.tag == "platform")
+    //    {
+    //        isGrounded = false;
+    //    }
+    //}
 
 }
