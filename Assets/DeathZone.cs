@@ -5,11 +5,15 @@ using UnityEngine.SceneManagement;
 
 public class DeathZone : MonoBehaviour
 {
+    public GameOverController gameOverController;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.GetComponent<PlayerController>() != null)
         {
-            RestartGame();
+            //RestartGame();
+            other.gameObject.GetComponent<PlayerController>().enabled = false;
+            gameOverController.PlayerDead();
         }
     }
 
