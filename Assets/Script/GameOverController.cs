@@ -7,10 +7,12 @@ using UnityEngine.SceneManagement;
 public class GameOverController : MonoBehaviour
 {
     public Button buttonRestart;
+    public Button buttonQuit;
 
     private void Awake()
     {
         buttonRestart.onClick.AddListener(ReloadLevel);
+        buttonQuit.onClick.AddListener(QuitLevel);
     }
 
     public void PlayerDead()
@@ -22,5 +24,11 @@ public class GameOverController : MonoBehaviour
     {
         Physics2D.IgnoreLayerCollision(7, 8, false);
         SceneManager.LoadScene(1);
+    } 
+    
+    public void QuitLevel()
+    {
+        Physics2D.IgnoreLayerCollision(7, 8, false);
+        SceneManager.LoadScene(0);
     }
 }
