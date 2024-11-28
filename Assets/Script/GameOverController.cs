@@ -23,7 +23,8 @@ public class GameOverController : MonoBehaviour
     public void ReloadLevel()
     {
         Physics2D.IgnoreLayerCollision(7, 8, false);
-        SceneManager.LoadScene(1);
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.buildIndex);
     } 
     
     public void QuitLevel()
