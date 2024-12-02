@@ -6,14 +6,16 @@ public class EnemyController : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float speed = 2f;
-    public float idleTime = 2f;
+    public float idleTime = 1f;
     public LayerMask groundLayers;
     public LayerMask enemyLayers;
+    //public LayerMask groundLayersForFrontHit;
 
     [Header("Raycast Settings")]
     public Transform groundCheck;
     public Transform frontCheck;
     public float rayDistance = 1f;
+    public float rayDistanceForFrnont = 1f;
 
     [Header("References")]
     public Rigidbody2D rb;
@@ -38,12 +40,13 @@ public class EnemyController : MonoBehaviour
 
         // Perform raycasts
         RaycastHit2D groundHit = Physics2D.Raycast(groundCheck.position, Vector2.down, rayDistance, groundLayers);
-        //RaycastHit2D frontHit = Physics2D.Raycast(frontCheck.position, isFacingRight ? Vector2.right : Vector2.left, rayDistance, enemyLayers);
-        RaycastHit2D frontHit = Physics2D.Raycast(frontCheck.position, isFacingRight ? Vector2.right : Vector2.left, rayDistance);
+        RaycastHit2D frontHit = Physics2D.Raycast(frontCheck.position, isFacingRight ? Vector2.right : Vector2.left, rayDistanceForFrnont, enemyLayers);
+        //RaycastHit2D frontHit = Physics2D.Raycast(frontCheck.position, isFacingRight ? Vector2.right : Vector2.left, rayDistance);
 
         // Handle movement and obstacle detection
         //if (groundHit.collider != null && frontHit.collider == null)
-        if (groundHit.collider != null && (frontHit.collider == null || !IsGroundOrEnemy(frontHit.collider)))
+        //if (groundHit.collider != null && (frontHit.collider == null || !IsGroundOrEnemy(frontHit.collider)))
+        if (groundHit.collider != null && (frontHit.collider == null))
         {
             // Move the enemy
             rb.velocity = new Vector2((isFacingRight ? speed : -speed), rb.velocity.y);
@@ -121,7 +124,7 @@ public class EnemyController : MonoBehaviour
             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
             playerController.GetHurt();
         }
-        else if (collision.gameObject.CompareTag("enemy"))
+        else if (collision.gameObject.CompareTag("enemy") || collision.gameObject.CompareTag("platform"))
         {
             // Handle collision with another enemy
             if (!isIdle)
@@ -129,6 +132,14 @@ public class EnemyController : MonoBehaviour
                 StartCoroutine(HandleDirectionChange());
             }
         }
+        //else if(collision.gameObject.CompareTag("platform"))
+        //{
+        //    // Handle collision with another enemy
+        //    if (!isIdle)
+        //    {
+        //        StartCoroutine(HandleDirectionChange());
+        //    }
+        //}
     }
 
 }
