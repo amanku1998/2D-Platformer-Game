@@ -21,6 +21,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
+    // New variable to store the original offset for the ground check
+    private Vector2 originalGroundCheckOffset;
+
+    public Animator GetPlayerAnimator()
+    {
+        return playerAnimator; 
+    }
 
     public void GetHurt()
     {
@@ -65,9 +72,12 @@ public class PlayerController : MonoBehaviour
         Physics2D.IgnoreLayerCollision(7, 8, false);
     }
 
-
-
     public Vector2 crouchSize = new Vector2(1.0f, 1.25f);  // Desired size when crouching (only height reduced)
+
+    // New variables for jump collider size and offset
+    public Vector2 jumpSize = new Vector2(1.0f, 1.25f);  // Desired size when jumping
+    private Vector2 jumpOffset;                          // Offset for jump collider
+
 
     public void PickUpKey()
     {
@@ -79,6 +89,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 originalOffset;
     [SerializeField] private bool isGrounded;
 
+
     private void Awake()
     {
         rigidbodyPlayer = gameObject.GetComponent<Rigidbody2D>();
@@ -89,8 +100,14 @@ public class PlayerController : MonoBehaviour
         // Store the original size and offset of the collider
         originalSize = boxCollider.size;
         originalOffset = boxCollider.offset;
+
+        // Store the original ground check offset relative to the player's position
+        originalGroundCheckOffset = groundCheck.localPosition;
+
         // Calculate the crouch offset so the bottom of the collider stays in place
         crouchOffset = new Vector2(originalOffset.x, originalOffset.y - (originalSize.y - crouchSize.y) / 2);
+
+        jumpOffset = new Vector2(originalOffset.x, originalOffset.y + (originalSize.y - jumpSize.y) / 2);
     }
 
     private void Update()
@@ -114,6 +131,16 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl))
         {
             Crouch(false);
+        }
+
+        // Adjust collider for jumping or reset when grounded
+        if (!isGrounded)
+        {
+            AdjustColliderForJump();
+        }
+        else
+        {
+            ResetCollider();
         }
 
         // Check for fall animation condition
@@ -161,8 +188,7 @@ public class PlayerController : MonoBehaviour
             //Horizontal animation
             playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));
         }
-        else
-        {
+        else{
             //Horizontal animation
             playerAnimator.SetFloat("Speed", 0);
         }
@@ -173,13 +199,25 @@ public class PlayerController : MonoBehaviour
         {
             scale.x = -1f * Mathf.Abs(scale.x);
         }
-        else if (horizontal > 0)
-        {
+        else if (horizontal > 0){
             scale.x = Mathf.Abs(scale.x);
         }
         transform.localScale = scale;
     }
 
+    private void AdjustColliderForJump()
+    {
+        // Change collider size and offset for jumping
+        boxCollider.size = jumpSize;
+        boxCollider.offset = jumpOffset;
+    }
+
+    private void ResetCollider()
+    {
+        // Reset the collider size and offset to the original
+        boxCollider.size = originalSize;
+        boxCollider.offset = originalOffset;
+    }
 
     public void MovePlayerVertically(float vertical)
     {
