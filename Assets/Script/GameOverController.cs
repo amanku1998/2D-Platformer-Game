@@ -17,11 +17,13 @@ public class GameOverController : MonoBehaviour
 
     public void PlayerDead()
     {
+        //SoundManager.Instance.PlayMusic(Sounds.PlayerDeath);
         gameObject.SetActive(true);
     }
 
     public void ReloadLevel()
     {
+        SoundManager.Instance.Play(Sounds.ButtonClick);
         Physics2D.IgnoreLayerCollision(7, 8, false);
         Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.buildIndex);
@@ -29,6 +31,7 @@ public class GameOverController : MonoBehaviour
     
     public void QuitLevel()
     {
+        SoundManager.Instance.Play(Sounds.ButtonClick);
         Physics2D.IgnoreLayerCollision(7, 8, false);
         SceneManager.LoadScene(0);
     }
