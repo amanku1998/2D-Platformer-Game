@@ -14,11 +14,24 @@ public class LevelLoader : MonoBehaviour
     {
         button = GetComponent<Button>();
         button.onClick.AddListener(onClick);
+
+        LevelStatus levelStatus = LevelManager.Instance.GetLevelStatus(levelName);
+
+        if (levelStatus == LevelStatus.Locked)
+        {
+            button.interactable = false;
+        }
+        else
+        {
+            button.interactable = true;
+        }
+
     }
 
     private void onClick()
     {
         LevelStatus levelStatus = LevelManager.Instance.GetLevelStatus(levelName);
+        SoundManager.Instance.Play(Sounds.ButtonPlay);
 
         switch (levelStatus)
         {

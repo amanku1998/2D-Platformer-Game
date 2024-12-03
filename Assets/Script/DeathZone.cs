@@ -13,6 +13,7 @@ public class DeathZone : MonoBehaviour
         {
             //RestartGame();
             other.gameObject.GetComponent<PlayerController>().enabled = false;
+            SoundManager.Instance.Play(Sounds.PlayerDeath);
             gameOverController.PlayerDead();
         }
     }

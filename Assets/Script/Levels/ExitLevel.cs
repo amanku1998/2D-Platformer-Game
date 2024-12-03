@@ -22,11 +22,15 @@ public class ExitLevel : MonoBehaviour
 
             // Update animation parameters
             animator.SetTrigger("IsPlayer");
+            SoundManager.Instance.Play(Sounds.OpenDoor);
         }
     }
 
     public void ActivatelevelCompletePanel()
     {
+        SoundManager.Instance.Play(Sounds.PlayerVictory);
+
         levelCompletedPopup.SetActive(true);
     }
+
 }

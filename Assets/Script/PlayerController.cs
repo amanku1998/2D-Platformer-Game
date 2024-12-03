@@ -9,20 +9,27 @@ public class PlayerController : MonoBehaviour
     public ScoreController scoreController;
     public GameOverController gameOverController;
 
+    public ParticleController playerDeadParticleEffect;
+
     [SerializeField] private Animator playerAnimator;
 
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpPower;
 
     [SerializeField] private Rigidbody2D rigidbodyPlayer;
-    [SerializeField] private BoxCollider2D boxCollider;
+    //[SerializeField] private BoxCollider2D boxCollider;
+    [SerializeField] private CapsuleCollider2D boxCollider;
 
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
+    private bool isHurt = false; // Tracks if the player is currently hurt
+
     // New variable to store the original offset for the ground check
     private Vector2 originalGroundCheckOffset;
+
+    private bool isPlayingFootstep = false;
 
     public Animator GetPlayerAnimator()
     {
@@ -31,11 +38,17 @@ public class PlayerController : MonoBehaviour
 
     public void GetHurt()
     {
-        HealthManager.health--;
+        if (HealthManager.health <= 0 || isHurt)
+            return;
 
+        isHurt = true; // Set hurt state
+
+        HealthManager.health--;
+        SoundManager.Instance.Play(Sounds.PlayerDeath);
         if (HealthManager.health <= 0)
         {
             KillPlayer();
+            isHurt = false; // Reset hurt state in case of death
         }
         else
         {
@@ -45,6 +58,7 @@ public class PlayerController : MonoBehaviour
 
     private void KillPlayer()
     {
+        playerDeadParticleEffect.PlayEffect();
         StartCoroutine(hidePlayerCollisionWithEnemy());
         Debug.Log("Player killed by enemy");
         //Destroy(gameObject);
@@ -61,8 +75,10 @@ public class PlayerController : MonoBehaviour
     {
         Physics2D.IgnoreLayerCollision(7,8);
         playerAnimator.SetTrigger("isPlayerHurt");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(3);
         Physics2D.IgnoreLayerCollision(7, 8, false);
+
+        isHurt = false; // Reset hurt state
     }
 
     IEnumerator hidePlayerCollisionWithEnemy()
@@ -81,6 +97,7 @@ public class PlayerController : MonoBehaviour
 
     public void PickUpKey()
     {
+        SoundManager.Instance.Play(Sounds.PlayerCollectable);
         scoreController.IncreaseScore(1);
     }
 
@@ -178,6 +195,29 @@ public class PlayerController : MonoBehaviour
         Vector3 newPosition = transform.position;
         newPosition.x += horizontal * moveSpeed * Time.deltaTime;
         transform.position = newPosition;
+
+        //SoundManager.Instance.PlayMusic(Sounds.PlayerFootSteps);
+
+        // Play footstep sound only if grounded and moving
+        if (isGrounded && Mathf.Abs(horizontal) > 0)
+        {
+            if (!isPlayingFootstep)
+            {
+                isPlayingFootstep = true;
+                SoundManager.Instance.Play(Sounds.PlayerFootSteps);
+                StartCoroutine(ResetFootstepSound());
+            }
+        }
+        else
+        {
+            isPlayingFootstep = false;
+        }
+    }
+
+    private IEnumerator ResetFootstepSound()
+    {
+        yield return new WaitForSeconds(0.5f); // Adjust to match your footstep timing
+        isPlayingFootstep = false;
     }
 
     private void HorizontalAnimation(float horizontal)
@@ -187,6 +227,7 @@ public class PlayerController : MonoBehaviour
         {
             //Horizontal animation
             playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));
+            //SoundManager.Instance.Play(Sounds.PlayerFootSteps);
         }
         else{
             //Horizontal animation
@@ -225,23 +266,8 @@ public class PlayerController : MonoBehaviour
         {
             playerAnimator.SetTrigger("Jump");
             rigidbodyPlayer.velocity = new Vector2(rigidbodyPlayer.velocity.x, jumpPower);
+
+            SoundManager.Instance.Play(Sounds.PlayerJump);
         }
     }
-
-    //private void OnCollisionStay2D(Collision2D other)
-    //{
-    //    if (other.transform.tag == "platform")
-    //    {
-    //        isGrounded = true;
-    //    }
-    //}
-
-    //private void OnCollisionExit2D(Collision2D other)
-    //{
-    //    if (other.transform.tag == "platform")
-    //    {
-    //        isGrounded = false;
-    //    }
-    //}
-
 }
