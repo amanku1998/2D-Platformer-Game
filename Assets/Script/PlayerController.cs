@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     public ScoreController scoreController;
+    public GameOverController gameOverController;
+
     [SerializeField] private Animator playerAnimator;
 
     [SerializeField] private float moveSpeed;
@@ -19,21 +21,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
-    //public void KillPlayer()
-    //{
-    //    HealthManager.health--;
-
-    //    if (HealthManager.health <= 0)
-    //    {
-    //        Debug.Log("Player killed by enemy");
-    //        //Destroy(gameObject);
-    //        playerAnimator.SetTrigger("isPlayerDead");
-    //    }
-    //    else
-    //    {
-    //        playerAnimator.SetTrigger("isPlayerHurt");
-    //    }
-    //}
 
     public void GetHurt()
     {
@@ -41,15 +28,26 @@ public class PlayerController : MonoBehaviour
 
         if (HealthManager.health <= 0)
         {
-            StartCoroutine(hidePlayerCollisionWithEnemy());
-            Debug.Log("Player killed by enemy");
-            //Destroy(gameObject);
-            playerAnimator.SetTrigger("isPlayerDead");
+            KillPlayer();
         }
         else
         {
             StartCoroutine(decreaseHealth());
         }
+    }
+
+    private void KillPlayer()
+    {
+        StartCoroutine(hidePlayerCollisionWithEnemy());
+        Debug.Log("Player killed by enemy");
+        //Destroy(gameObject);
+        playerAnimator.SetTrigger("isPlayerDead");
+    }
+
+    public void EnableGameoverPanel()
+    {
+        gameOverController.PlayerDead();
+        this.enabled = false;
     }
 
     IEnumerator decreaseHealth()
@@ -67,11 +65,7 @@ public class PlayerController : MonoBehaviour
         Physics2D.IgnoreLayerCollision(7, 8, false);
     }
 
-    public void ReloadLevel()
-    {
-        Physics2D.IgnoreLayerCollision(7, 8, false);
-        SceneManager.LoadScene(0);
-    }
+
 
     public Vector2 crouchSize = new Vector2(1.0f, 1.25f);  // Desired size when crouching (only height reduced)
 

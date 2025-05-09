@@ -29,7 +29,7 @@ public class EnemyController : MonoBehaviour
         Debug.DrawLine(frontCheck.position, frontCheck.position + (isFacingRight ? Vector3.right : Vector3.left) * rayDistance, Color.red);
 
         // Update animation parameters
-        animator.SetBool("isMoving", !isIdle && Mathf.Abs(rb.velocity.x) > 0.1f);
+        animator.SetBool("isMoving", !isIdle && Mathf.Abs(rb.velocity.x) > 0.05f);
     }
 
     private void FixedUpdate()
@@ -38,10 +38,12 @@ public class EnemyController : MonoBehaviour
 
         // Perform raycasts
         RaycastHit2D groundHit = Physics2D.Raycast(groundCheck.position, Vector2.down, rayDistance, groundLayers);
-        RaycastHit2D frontHit = Physics2D.Raycast(frontCheck.position, isFacingRight ? Vector2.right : Vector2.left, rayDistance, enemyLayers);
+        //RaycastHit2D frontHit = Physics2D.Raycast(frontCheck.position, isFacingRight ? Vector2.right : Vector2.left, rayDistance, enemyLayers);
+        RaycastHit2D frontHit = Physics2D.Raycast(frontCheck.position, isFacingRight ? Vector2.right : Vector2.left, rayDistance);
 
         // Handle movement and obstacle detection
-        if (groundHit.collider != null && frontHit.collider == null)
+        //if (groundHit.collider != null && frontHit.collider == null)
+        if (groundHit.collider != null && (frontHit.collider == null || !IsGroundOrEnemy(frontHit.collider)))
         {
             // Move the enemy
             rb.velocity = new Vector2((isFacingRight ? speed : -speed), rb.velocity.y);
@@ -56,6 +58,39 @@ public class EnemyController : MonoBehaviour
                 StartCoroutine(HandleDirectionChange());
             }
         }
+
+
+        //// Check if the ground is detected and no valid obstacle in front
+        //if (groundHit.collider != null && (frontHit.collider == null || !IsGroundOrEnemy(frontHit.collider)))
+        //{
+        //    // Move the enemy
+        //    rb.velocity = new Vector2((isFacingRight ? speed : -speed), rb.velocity.y);
+        //}
+        //else if (frontHit.collider != null && IsGroundOrEnemy(frontHit.collider))
+        //{
+        //    Debug.Log("frontHit hit detected: " + frontHit.collider.name);
+        //    if (!isIdle)
+        //    {
+        //        // Stop and change direction
+        //        rb.velocity = Vector2.zero;
+        //        StartCoroutine(HandleDirectionChange());
+        //    }
+        //}
+        //else
+        //{
+        //    Debug.Log("Stop movement if not detected ground : ");
+        //    // Stop movement if no ground
+        //    rb.velocity = Vector2.zero;
+
+        //    StartCoroutine(HandleDirectionChange());
+        //}
+    }
+
+    private bool IsGroundOrEnemy(Collider2D collider)
+    {
+        bool isMatch = collider.gameObject.layer == 6 || collider.gameObject.layer == 8;
+        Debug.Log($"IsGroundOrEnemy: {collider.name}, Match: {isMatch}");
+        return isMatch;
     }
 
     private IEnumerator HandleDirectionChange()
