@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,11 +15,69 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody2D rigidbodyPlayer;
     [SerializeField] private BoxCollider2D boxCollider;
 
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private float groundCheckRadius = 0.2f;
+    [SerializeField] private LayerMask groundLayer;
+
+    //public void KillPlayer()
+    //{
+    //    HealthManager.health--;
+
+    //    if (HealthManager.health <= 0)
+    //    {
+    //        Debug.Log("Player killed by enemy");
+    //        //Destroy(gameObject);
+    //        playerAnimator.SetTrigger("isPlayerDead");
+    //    }
+    //    else
+    //    {
+    //        playerAnimator.SetTrigger("isPlayerHurt");
+    //    }
+    //}
+
+    public void GetHurt()
+    {
+        HealthManager.health--;
+
+        if (HealthManager.health <= 0)
+        {
+            StartCoroutine(hidePlayerCollisionWithEnemy());
+            Debug.Log("Player killed by enemy");
+            //Destroy(gameObject);
+            playerAnimator.SetTrigger("isPlayerDead");
+        }
+        else
+        {
+            StartCoroutine(decreaseHealth());
+        }
+    }
+
+    IEnumerator decreaseHealth()
+    {
+        Physics2D.IgnoreLayerCollision(7,8);
+        playerAnimator.SetTrigger("isPlayerHurt");
+        yield return new WaitForSeconds(2);
+        Physics2D.IgnoreLayerCollision(7, 8, false);
+    }
+
+    IEnumerator hidePlayerCollisionWithEnemy()
+    {
+        Physics2D.IgnoreLayerCollision(7, 8);
+        yield return new WaitForSeconds(2f);
+        Physics2D.IgnoreLayerCollision(7, 8, false);
+    }
+
+    public void ReloadLevel()
+    {
+        Physics2D.IgnoreLayerCollision(7, 8, false);
+        SceneManager.LoadScene(0);
+    }
+
     public Vector2 crouchSize = new Vector2(1.0f, 1.25f);  // Desired size when crouching (only height reduced)
 
-    internal void PickUpKey()
+    public void PickUpKey()
     {
-        scoreController.IncreaseScore(10);
+        scoreController.IncreaseScore(1);
     }
 
     private Vector2 crouchOffset;                          // New offset to keep the bottom in place
@@ -36,13 +95,15 @@ public class PlayerController : MonoBehaviour
         // Store the original size and offset of the collider
         originalSize = boxCollider.size;
         originalOffset = boxCollider.offset;
-        //Debug.Log("originalOffset.y :" + originalOffset.y + "originalSize.y :" + originalSize.y + "crouchSize.y :" + crouchSize.y);
         // Calculate the crouch offset so the bottom of the collider stays in place
         crouchOffset = new Vector2(originalOffset.x, originalOffset.y - (originalSize.y - crouchSize.y) / 2);
     }
 
     private void Update()
     {
+        // Check if the player is grounded
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+
         float horizontal = Input.GetAxisRaw("Horizontal");
 
         HorizontalAnimation(horizontal);
@@ -59,6 +120,16 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl))
         {
             Crouch(false);
+        }
+
+        // Check for fall animation condition
+        if (!isGrounded && rigidbodyPlayer.velocity.y < 0)
+        {
+            playerAnimator.SetBool("isFalling", true);
+        }
+        else if (isGrounded)
+        {
+            playerAnimator.SetBool("isFalling", false);
         }
     }
 
@@ -91,13 +162,16 @@ public class PlayerController : MonoBehaviour
     private void HorizontalAnimation(float horizontal)
     {
         playerAnimator.SetBool("isGrounded", isGrounded);
-
         if (isGrounded)
         {
             //Horizontal animation
-            playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));           
+            playerAnimator.SetFloat("Speed", Mathf.Abs(horizontal));
         }
-
+        else
+        {
+            //Horizontal animation
+            playerAnimator.SetFloat("Speed", 0);
+        }
 
         //Flipping the player
         Vector2 scale = transform.localScale;
@@ -118,29 +192,24 @@ public class PlayerController : MonoBehaviour
         if (vertical > 0 && isGrounded)
         {
             playerAnimator.SetTrigger("Jump");
-            rigidbodyPlayer.AddForce(new Vector2(0, jumpPower), ForceMode2D.Impulse);
+            rigidbodyPlayer.velocity = new Vector2(rigidbodyPlayer.velocity.x, jumpPower);
         }
     }
 
-    private void OnCollisionStay2D(Collision2D other)
-    {
-        if (other.transform.tag == "platform")
-        {
-            isGrounded = true;
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D other)
-    {
-        if (other.transform.tag == "platform")
-        {
-            isGrounded = false;
-        }
-    }
-
-    //private void OnDrawGizmos()
+    //private void OnCollisionStay2D(Collision2D other)
     //{
+    //    if (other.transform.tag == "platform")
+    //    {
+    //        isGrounded = true;
+    //    }
+    //}
 
+    //private void OnCollisionExit2D(Collision2D other)
+    //{
+    //    if (other.transform.tag == "platform")
+    //    {
+    //        isGrounded = false;
+    //    }
     //}
 
 }
